@@ -2,9 +2,9 @@ DEV?=./dev
 BIN=$(DEV)/gbdk-n/bin
 
 CC=$(BIN)/gbdk-n-compile.sh
-LK=$(BIN)/gbdk-n-link.sh
-MKROM=makebin -Z -yc
-EMU=vbam
+LK?=$(BIN)/gbdk-n-link.sh
+MKROM?=makebin -Z -yc
+EMU?=vbam
 
 music.gb: mainmusic.ihx
 	$(MKROM) $^ $@
