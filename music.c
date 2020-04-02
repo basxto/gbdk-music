@@ -39,17 +39,17 @@ inline void subtick_music(){
     // instrument
     switch ((pat->pulse_vi & 0x0F)) {
     case 8:
-        NR21_REG = 0x90;
         NR22_REG = 0x00 | (pat->pulse_vi & 0xF0); // continuous tone
+        NR21_REG = 0x90;
         tl = 0x80; // don't disable after time
         break;
     case 7:
-        NR21_REG = 0x50;                          // 50% duty
         NR22_REG = 0x02 | (pat->pulse_vi & 0xF0); // volume envelope
+        NR21_REG = 0x50;                          // 50% duty
         break;
     case 6:
-        NR21_REG = 0x90;                          // 75% duty
         NR22_REG = 0x07 | (pat->pulse_vi & 0xF0); // volume envelope
+        NR21_REG = 0x90;                          // 75% duty
         break;
     }
 
@@ -65,9 +65,9 @@ inline void subtick_music(){
     pat = current_pf(pttrn, pttrn_frame);
 
     if ((pat->wave_vi & 0x0F) == 2) {
+        NR32_REG = 0x20; // max volume
         NR30_REG = 0x0;  // off
         NR30_REG = 0x80; // on
-        NR32_REG = 0x20; // max volume
         NR31_REG = 0xF0; // sound length
     } else {
         NR30_REG = 0x0; // off
@@ -83,27 +83,28 @@ inline void subtick_music(){
     pttrn = current_sf().noise_pattern;
     pat = current_pf(pttrn, pttrn_frame);
     // NR41 sound length
-    NR44_REG = 0x80;
-    NR42_REG = 0x07 | (pat->noise_vi & 0xF0);
+    if((pat->noise_vi & 0x0F) != 0x0F){
+        NR44_REG = 0x80;
+    }
     switch (pat->noise_vi & 0x0F) {
     case 0x03: // hihat
         // Env. Start: 10
         // Env. Down/Up: 0
         // Nev. Length: 2
         // Sound Size: 23
-        NR41_REG = 23;
         // start | down/up | length
-        NR42_REG = 0xA0 | 0x00 | 2;
+        NR42_REG = (pat->noise_vi & 0xF0) | 0x00 | 2;
+        NR41_REG = 23;
         NR43_REG = 0x10 | 0x04 | 0x03;
         break;
     case 0x04: // bass
+        NR42_REG = (pat->noise_vi & 0xF0) | 0x00 | 3;
         NR41_REG = 28;
-        NR42_REG = 0xF0 | 0x00 | 3;
         NR43_REG = 0x60 | 0x04 | 0x03;
         break;
     case 0x05: // snare
+        NR42_REG = (pat->noise_vi & 0xF0) | 0x00 | 5;
         NR41_REG = 30;
-        NR42_REG = 0x80 | 0x00 | 5;
         NR43_REG = 0x20 | 0x04 | 0x03;
         break;
     }
