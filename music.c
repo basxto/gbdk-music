@@ -15,6 +15,40 @@ UINT8 tick_counter;
 
 Song *current_song;
 
+void blinger(const UINT8 note, const UINT8 wait, const UINT8 note2, const UINT8 wait2, const UINT8 note3) {
+    NR10_REG = 0x00; // no sweep
+    NR11_REG = 0x50; // 50% duty
+
+    NR12_REG = 0xF0; // constant volume envelope
+    NR14_REG = 0xC0 | note2int_hi(note); // msb
+    NR13_REG = note2int_lo(note);        // lsb
+
+    // could pack that on a sound buffer and let tick hanlde it
+    for(int i = 0; i < wait; ++i)
+        wait_vbl_done();
+    NR12_REG = 0xF0;
+    NR14_REG = 0xC0 | note2int_hi(note2);
+    NR13_REG = note2int_lo(note2);
+    for(int i = 0; i < wait2; ++i)
+        wait_vbl_done();
+    NR12_REG = 0xF1; // falling volume envelope
+    NR14_REG = 0xC0 | note2int_hi(note3);
+    NR13_REG = note2int_lo(note3);
+}
+
+void plonger(const UINT8 note, const UINT8 duty, const INT8 arp) {
+    NR12_REG = 0xF7; // volume envelope
+    if(arp >= 0)
+        NR10_REG = 0x10 | arp; // arpeggio
+    else
+        NR10_REG = 0x10 | 0x08 | -arp;
+    
+    NR11_REG = duty;
+
+    NR14_REG = 0xC0 | note2int_hi(note);
+    NR13_REG = note2int_lo(note);
+}
+
 void init_music(Song *song) {
     NR52_REG = 0x80; // enable sound
     NR50_REG = 0x77; // full volume

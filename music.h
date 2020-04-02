@@ -33,6 +33,9 @@ typedef struct{
     const Song_frame *arrangement;
 } Song;
 
+void blinger(const UINT8 note, const UINT8 wait, const UINT8 note2, const UINT8 wait2, const UINT8 note3);
+void plonger(const UINT8 note, const UINT8 duty, const INT8 arp);
+
 void init_music(Song *song);
 void tick_music();
 
