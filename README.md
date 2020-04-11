@@ -1,5 +1,7 @@
 # gbdk-music
-Music library for gbdk-n
+Music library for gbdk-n with demo music player.
+
+![](screenshots/2020-04-11_11:51_320x288.png)
 
 ## Build
 
