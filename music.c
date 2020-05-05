@@ -144,12 +144,13 @@ inline void subtick_music(){
     }
 #endif
 
-    music_counter++;
+    ++music_counter;
     music_counter %= (current_song->pattern_size * current_song->song_size);
 }
 
 UINT8 tick_music() {
-    tick_counter = (tick_counter + 1) % current_song->speed_divider;
+    ++tick_counter;
+    tick_counter %= current_song->speed_divider;
     if (tick_counter == 0) {
         subtick_music();
         return 1;
