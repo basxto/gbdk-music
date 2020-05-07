@@ -25,6 +25,14 @@ typedef struct {
     const UINT8 noise_pattern;
 } Song_frame;
 
+typedef struct{
+    const UINT8 NR2;// volume envelope
+    const UINT8 NR1;// duty
+    const UINT8 NR4;// trigger and length enable
+    // NR0 for pulse1 and wave; NR3 for noise
+    const UINT8 other;
+} Instrument;
+
 // 5 elements is again not suitable for arrays
 // but this is not used often
 typedef struct{
@@ -33,15 +41,8 @@ typedef struct{
     const UINT8 speed_divider;
     const Pattern_frame *pattern;
     const Song_frame *arrangement;
+    const Instrument *instruments;
 } Song;
-
-typedef struct{
-    const UINT8 NR2;// volume envelope
-    const UINT8 NR1;// duty
-    const UINT8 NR4;// trigger and length enable
-    // NR0 for pulse1 and wave; NR3 for noise
-    const UINT8 other;
-} Instrument;
 
 void blinger(const UINT8 note, const UINT8 wait, const UINT8 note2, const UINT8 wait2, const UINT8 note3);
 void plonger(const UINT8 note, const UINT8 duty, const INT8 arp);

@@ -62,22 +62,6 @@ void init_music(Song *song) {
 // access arrays via pointer
 #define current_pf(pttrn, pttrn_frame) (current_song->pattern + ((pttrn) * current_song->pattern_size) + (pttrn_frame))
 
-
-// max 0x0E
-const Instrument instruments[] = {
-    //NR2     NR1   NR4   NR0/NR3
-    // pulse
-    {0x00   , 0x90, 0x80, 0x00},
-    {0x02   , 0x50, 0xC0, 0x00},
-    {0x07   , 0x90, 0xC0, 0x00},
-    // wave
-    {0x00   , 0xF0, 0xC0, 0x80},
-    // noise
-    {0x00 |2,   23, 0xC0, 0x10 | 0x04 | 0x03},
-    {0x00 |3,   28, 0xC0, 0x60 | 0x04 | 0x03},
-    {0x00 |5,   30, 0xC0, 0x20 | 0x04 | 0x03}
-};
-
 // no instrument
 const Instrument instnoment = {0x00, 0x00, 0x00, 0x00};
 
@@ -86,6 +70,7 @@ inline void subtick_music(){
     UINT8 pttrn_frame = music_counter % current_song->pattern_size;
     const Pattern_frame *pat;
     const Instrument *instr;
+    const Instrument *instruments = current_song->instruments;
 
 #ifdef PULSE
     pat = current_pf(current_sf->pulse_pattern, pttrn_frame);
@@ -148,17 +133,18 @@ inline void subtick_music(){
         NR42_REG = (pat->note & 0xF0) | instr->NR2;
     }
 #endif
-
-    ++music_counter;
-    music_counter %= (current_song->pattern_size * current_song->song_size);
+    UINT8 tmp = current_song->pattern_size * current_song->song_size;
+    if(++music_counter >= tmp)
+        music_counter = 0;
 }
 
 UINT8 tick_music() {
-    ++tick_counter;
-    tick_counter %= current_song->speed_divider;
-    if (tick_counter == 0) {
-        subtick_music();
-        return 1;
+    if(++tick_counter >= current_song->speed_divider){
+        tick_counter = 0;
     }
-    return 0;
+    if(tick_counter != 0){
+        return 0;
+    }
+    subtick_music();
+    return 1;
 }

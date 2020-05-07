@@ -135,7 +135,22 @@ const Song_frame the_journey_begins_arrangement[] = {
     { 3,  6,  9, 10}
 };
 
+const Instrument the_journey_begins_instruments[] = {
+    //NR2     NR1   NR4   NR0/NR3
+    // pulse
+    {0x00   , 0x90, 0x80, 0x00},
+    {0x02   , 0x50, 0xC0, 0x00},
+    {0x07   , 0x90, 0xC0, 0x00},
+    // wave
+    {0x00   , 0xF0, 0xC0, 0x80},
+    // noise
+    {0x00 |2,   23, 0xC0, 0x10 | 0x04 | 0x03},
+    {0x00 |3,   28, 0xC0, 0x60 | 0x04 | 0x03},
+    {0x00 |5,   30, 0xC0, 0x20 | 0x04 | 0x03}
+};
+
 Song the_journey_begins={8,8,5,
     the_journey_begins_pattern[0],
-    the_journey_begins_arrangement
+    the_journey_begins_arrangement,
+    the_journey_begins_instruments
 };
