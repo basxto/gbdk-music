@@ -8,6 +8,7 @@
 // enable/disable channels
 #define WAVE
 #define PULSE
+#define PULSE2
 #define NOISE
 
 UINT8 music_counter;
@@ -42,7 +43,7 @@ void plonger(const UINT8 note, const UINT8 duty, const INT8 arp) {
         NR10_REG = 0x10 | arp; // arpeggio
     else
         NR10_REG = 0x10 | 0x08 | -arp;
-    
+
     NR11_REG = duty;
 
     NR14_REG = 0xC0 | note2int_hi(note);
@@ -73,23 +74,50 @@ inline void subtick_music(){
     // instrument
     switch ((pat->pulse_vi & 0x0F)) {
     case 8:
-        NR22_REG = 0x00 | (pat->pulse_vi & 0xF0); // continuous tone
-        NR21_REG = 0x90;
+        NR12_REG = 0x00 | (pat->pulse_vi & 0xF0); // continuous tone
+        NR11_REG = 0x90;
         tl = 0x80; // don't disable after time
         break;
     case 7:
-        NR22_REG = 0x02 | (pat->pulse_vi & 0xF0); // volume envelope
-        NR21_REG = 0x50;                          // 50% duty
+        NR12_REG = 0x02 | (pat->pulse_vi & 0xF0); // volume envelope
+        NR11_REG = 0x50;                          // 50% duty
         break;
     case 6:
-        NR22_REG = 0x07 | (pat->pulse_vi & 0xF0); // volume envelope
-        NR21_REG = 0x90;                          // 75% duty
+        NR12_REG = 0x07 | (pat->pulse_vi & 0xF0); // volume envelope
+        NR11_REG = 0x90;                          // 75% duty
         break;
     }
 
     if (pat->pulse_note != 0xFF) {
-        NR24_REG = tl | note2int_hi(pat->pulse_note); // msb
-        NR23_REG = note2int_lo(pat->pulse_note);
+        NR14_REG = tl | note2int_hi(pat->pulse_note); // msb
+        NR13_REG = note2int_lo(pat->pulse_note);
+    }
+#endif
+
+#ifdef PULSE2
+    tl = 0xC0;
+    //pttrn = current_sf().pulse2_pattern;
+    //pat = current_pf(pttrn, pttrn_frame);
+    // instrument
+    switch ((pat->pulse2_vi & 0x0F)) {
+    case 8:
+        NR22_REG = 0x00 | (pat->pulse2_vi & 0xF0); // continuous tone
+        NR21_REG = 0x90;
+        tl = 0x80; // don't disable after time
+        break;
+    case 7:
+        NR22_REG = 0x02 | (pat->pulse2_vi & 0xF0); // volume envelope
+        NR21_REG = 0x50;                          // 50% duty
+        break;
+    case 6:
+        NR22_REG = 0x07 | (pat->pulse2_vi & 0xF0); // volume envelope
+        NR21_REG = 0x90;                          // 75% duty
+        break;
+    }
+
+    if (pat->pulse2_note != 0xFF) {
+        NR24_REG = tl | note2int_hi(pat->pulse2_note); // msb
+        NR23_REG = note2int_lo(pat->pulse2_note);
     }
 #endif
 
