@@ -36,10 +36,11 @@ typedef struct{
 } Song;
 
 typedef struct{
-    const UINT8 NR3;
-    const UINT8 NR2;
-    const UINT8 NR1;
-    const UINT8 NR0;
+    const UINT8 NR2;// volume envelope
+    const UINT8 NR1;// duty
+    const UINT8 NR4;// trigger and length enable
+    // NR0 for pulse1 and wave; NR3 for noise
+    const UINT8 other;
 } Instrument;
 
 void blinger(const UINT8 note, const UINT8 wait, const UINT8 note2, const UINT8 wait2, const UINT8 note3);
