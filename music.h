@@ -44,8 +44,16 @@ typedef struct{
     const Instrument *instruments;
 } Song;
 
+// wave volumes
+#define wF 0x20
+#define w7 0x60
+#define w0 0x00
+
 void blinger(const UINT8 note, const UINT8 wait, const UINT8 note2, const UINT8 wait2, const UINT8 note3);
 void plonger(const UINT8 note, const UINT8 duty, const INT8 arp);
+
+// caution: sounds get played backwards
+void play_sound(Song *song);
 
 void init_music(Song *song);
 UINT8 tick_music();
