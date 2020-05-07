@@ -60,73 +60,70 @@ void init_music(Song *song) {
 }
 
 // access arrays via pointer
-#define current_sf() (current_song->arrangement[music_counter / current_song->pattern_size])
 #define current_pf(pttrn, pttrn_frame) (current_song->pattern + ((pttrn) * current_song->pattern_size) + (pttrn_frame))
 
 inline void subtick_music(){
+    Song_frame *current_sf = &(current_song->arrangement[music_counter / current_song->pattern_size]);
     UINT8 pttrn_frame = music_counter % current_song->pattern_size;
-    UINT8 pttrn = current_sf().pulse_pattern;
-    const Pattern_frame *pat = current_pf(pttrn, pttrn_frame);
+    const Pattern_frame *pat = current_pf(current_sf->pulse_pattern, pttrn_frame);
     UINT8 tl;// trigger and length enable
 
 #ifdef PULSE
     tl = 0xC0;
     // instrument
-    switch ((pat->pulse_vi & 0x0F)) {
+    switch ((pat->vi & 0x0F)) {
     case 8:
-        NR12_REG = 0x00 | (pat->pulse_vi & 0xF0); // continuous tone
+        NR12_REG = 0x00 | (pat->vi & 0xF0); // continuous tone
         NR11_REG = 0x90;
         tl = 0x80; // don't disable after time
         break;
     case 7:
-        NR12_REG = 0x02 | (pat->pulse_vi & 0xF0); // volume envelope
+        NR12_REG = 0x02 | (pat->vi & 0xF0); // volume envelope
         NR11_REG = 0x50;                          // 50% duty
         break;
     case 6:
-        NR12_REG = 0x07 | (pat->pulse_vi & 0xF0); // volume envelope
+        NR12_REG = 0x07 | (pat->vi & 0xF0); // volume envelope
         NR11_REG = 0x90;                          // 75% duty
         break;
     }
 
-    if (pat->pulse_note != 0xFF) {
-        NR14_REG = tl | note2int_hi(pat->pulse_note); // msb
-        NR13_REG = note2int_lo(pat->pulse_note);
+    if (pat->note != 0xFF) {
+        NR14_REG = tl | note2int_hi(pat->note); // msb
+        NR13_REG = note2int_lo(pat->note);
     }
 #endif
 
 #ifdef PULSE2
     tl = 0xC0;
-    //pttrn = current_sf().pulse2_pattern;
-    //pat = current_pf(pttrn, pttrn_frame);
+    pat = current_pf(current_sf->pulse2_pattern, pttrn_frame);
     // instrument
-    switch ((pat->pulse2_vi & 0x0F)) {
+    switch ((pat->vi & 0x0F)) {
     case 8:
-        NR22_REG = 0x00 | (pat->pulse2_vi & 0xF0); // continuous tone
+        NR22_REG = 0x00 | (pat->vi & 0xF0); // continuous tone
         NR21_REG = 0x90;
         tl = 0x80; // don't disable after time
         break;
     case 7:
-        NR22_REG = 0x02 | (pat->pulse2_vi & 0xF0); // volume envelope
+        NR22_REG = 0x02 | (pat->vi & 0xF0); // volume envelope
         NR21_REG = 0x50;                          // 50% duty
         break;
     case 6:
-        NR22_REG = 0x07 | (pat->pulse2_vi & 0xF0); // volume envelope
+        NR22_REG = 0x07 | (pat->vi & 0xF0); // volume envelope
         NR21_REG = 0x90;                          // 75% duty
         break;
     }
 
-    if (pat->pulse2_note != 0xFF) {
-        NR24_REG = tl | note2int_hi(pat->pulse2_note); // msb
-        NR23_REG = note2int_lo(pat->pulse2_note);
+    if (pat->note != 0xFF) {
+        NR24_REG = tl | note2int_hi(pat->note); // msb
+        NR23_REG = note2int_lo(pat->note);
     }
 #endif
 
 #ifdef WAVE
     tl = 0xC0;
-    pttrn = current_sf().wave_pattern;
-    pat = current_pf(pttrn, pttrn_frame);
+    pat = current_pf(current_sf->wave_pattern, pttrn_frame);
 
-    if ((pat->wave_vi & 0x0F) == 2) {
+    if ((pat->vi & 0x0F) == 2) {
         NR32_REG = 0x20; // max volume
         NR30_REG = 0x0;  // off
         NR30_REG = 0x80; // on
@@ -135,37 +132,36 @@ inline void subtick_music(){
         NR30_REG = 0x0; // off
     }
 
-    if (pat->wave_note != 0xFF) {
-        NR34_REG = tl | note2int_hi(pat->wave_note); // msb
-        NR33_REG = note2int_lo(pat->wave_note);
+    if (pat->note != 0xFF) {
+        NR34_REG = tl | note2int_hi(pat->note); // msb
+        NR33_REG = note2int_lo(pat->note);
     }
 #endif
 
 #ifdef NOISE
-    pttrn = current_sf().noise_pattern;
-    pat = current_pf(pttrn, pttrn_frame);
+    pat = current_pf(current_sf->noise_pattern, pttrn_frame);
     // NR41 sound length
-    if((pat->noise_vi & 0x0F) != 0x0F){
+    if((pat->note & 0x0F) != 0x0F){
         NR44_REG = 0x80;
     }
-    switch (pat->noise_vi & 0x0F) {
+    switch (pat->note & 0x0F) {
     case 0x03: // hihat
         // Env. Start: 10
         // Env. Down/Up: 0
         // Nev. Length: 2
         // Sound Size: 23
         // start | down/up | length
-        NR42_REG = (pat->noise_vi & 0xF0) | 0x00 | 2;
+        NR42_REG = (pat->note & 0xF0) | 0x00 | 2;
         NR41_REG = 23;
         NR43_REG = 0x10 | 0x04 | 0x03;
         break;
     case 0x04: // bass
-        NR42_REG = (pat->noise_vi & 0xF0) | 0x00 | 3;
+        NR42_REG = (pat->note & 0xF0) | 0x00 | 3;
         NR41_REG = 28;
         NR43_REG = 0x60 | 0x04 | 0x03;
         break;
     case 0x05: // snare
-        NR42_REG = (pat->noise_vi & 0xF0) | 0x00 | 5;
+        NR42_REG = (pat->note & 0xF0) | 0x00 | 5;
         NR41_REG = 30;
         NR43_REG = 0x20 | 0x04 | 0x03;
         break;
