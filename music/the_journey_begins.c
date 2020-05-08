@@ -72,14 +72,14 @@ const Pattern_frame the_journey_begins_pattern[][8] = {
     },
     //  |-------NOISE---------|
     {
-        {0x86           , 0x00},
-        {0xFF           , 0x00},
-        {0xFF           , 0x00},
-        {0xA4           , 0x00},
-        {0x86           , 0x00},
-        {0xFF           , 0x00},
-        {0x86           , 0x00},
-        {0xA4           , 0x00}
+        {0xFF           ,0x86},
+        {0xFF           ,0xFF},
+        {0xFF           ,0xFF},
+        {0xFF           ,0xA4},
+        {0xFF           ,0x86},
+        {0xFF           ,0xFF},
+        {0xFF           ,0x86},
+        {0xFF           ,0xA4}
     },
     //  |-------PULSE-1-------|
     {

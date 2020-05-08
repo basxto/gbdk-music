@@ -75,29 +75,20 @@ inline void subtick_music(){
     const Pattern_frame *pat;
     const Instrument *instr;
     const Instrument *instruments = current_song->instruments;
-    __REG base = (&NR10_REG)+10;//(__REG)0xFF10;
+    __REG base = (&NR10_REG)+15;
 
-#ifdef NOISE
-    pat = current_pf(*current_sf, pttrn_frame);
-    if((pat->note & 0x0F) != 0x0F){
-        instr = &(instruments[pat->note & 0x0F]);
-        NR44_REG = 0x80;
-        NR41_REG = instr->NR1;
-        NR43_REG = instr->other;
-        NR42_REG = (pat->note & 0xF0) | instr->NR2;
-    }
-#endif
-    --current_sf;
-
-
-    // loop first three channels (reverse)
-    for(UINT8 i = 0; i < 3; ++i){
+    // loop channels backwards
+    for(UINT8 i = 0; i < 4; ++i){
         pat = current_pf(*current_sf, pttrn_frame);
         instr = &(instruments[pat->vi & 0x0F]);
         if((pat->vi & 0x0F) != 0x0F){
             *(base) = instr->other;
-            *(base+2) = instr->NR2 | (pat->vi & 0xF0);
+            *(base+2) = (pat->vi & 0xF0) | instr->NR2;
             *(base+1) = instr->NR1;
+            if(i == 0){
+                *(base+4) = 0x80;
+                *(base+3) = instr->other;
+            }
         }else
             instr = &instnoment;
 
