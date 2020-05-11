@@ -64,65 +64,41 @@ void print_song(const Song *song){
 	UINT16 music_counter = 0;
 	UINT8 arrangement = 0;
 	UINT8 pattern = 0;
-	UINT8 pttrn;
+	UINT8 *pttrn;
 	const Pattern_frame *pat;
 	for(music_counter = 0; music_counter < (song->song_size * song->pattern_size); ++music_counter){
 		// pulse channel
-		pttrn = get_sf(song, music_counter).pulse_pattern;
-		pat = get_pf(song, pttrn, ((music_counter) % song->pattern_size));
-		if(pat->pulse_note == 0xFF){
-			buffer[1] = '-';
-			buffer[2] = '-';
-			buffer[3] = ' ';
-		}else{
-			buffer[1] = hex2char[pat->pulse_note >> 4];
-			buffer[2] = note2string[pat->pulse_note & 0xF][0];
-			buffer[3] = note2string[pat->pulse_note & 0xF][1];
+		pttrn = &(get_sf(song, music_counter).pulse_pattern);
+		UINT8 b = 0;
+		// first three channel
+		for(UINT8 i = 0; i < 3; ++i){
+			pat = get_pf(song, *(pttrn++), ((music_counter) % song->pattern_size));
+			if(pat->note == 0xFF){
+				buffer[++b] = '-';
+				buffer[++b] = '-';
+				buffer[++b] = ' ';
+			}else{
+				buffer[++b] = hex2char[pat->note / 12];
+				buffer[++b] = note2string[pat->note % 12][0];
+				buffer[++b] = note2string[pat->note % 12][1];
+			}
+			//buffer[++b] = ' ';
+			buffer[++b] = hex2char[pat->vi >> 4];
+			if((pat->vi & 0xF) == 0xF){
+				buffer[++b] = '-';
+			}else{
+				buffer[++b] = hex2char[pat->vi & 0xF];
+			}
+			buffer[++b] = '\\';
 		}
-		buffer[4] = ' ';
-		buffer[5] = hex2char[pat->pulse_vi >> 4];
-		if((pat->pulse_vi & 0xF) == 0xF){
-			buffer[6] = '-';
-		}else{
-			buffer[6] = hex2char[pat->pulse_vi & 0xF];
-		}
-		buffer[7] = ' ';
-		buffer[8] = '\\';
-		buffer[9] = ' ';
-
-		// wave channel
-		pttrn = get_sf(song, music_counter).wave_pattern;
-		pat = get_pf(song, pttrn, ((music_counter) % song->pattern_size));
-		if(pat->wave_note == 0xFF){
-			buffer[10] = '-';
-			buffer[11] = '-';
-			buffer[12] = ' ';
-		}else{
-			buffer[10] = hex2char[pat->wave_note >> 4];
-			buffer[11] = note2string[pat->wave_note & 0xF][0];
-			buffer[12] = note2string[pat->wave_note & 0xF][1];
-		}
-		buffer[13] = ' ';
-		buffer[14] = hex2char[pat->wave_vi >> 4];
-		if((pat->wave_vi & 0xF) == 0xF){
-			buffer[15] = '-';
-		}else{
-			buffer[15] = hex2char[pat->wave_vi & 0xF];
-		}
-		buffer[16] = ' ';
-		buffer[17] = '\\';
-		buffer[18] = ' ';
-
 		// noise channel
-		pttrn = get_sf(song, music_counter).noise_pattern;
-		pat = get_pf(song, pttrn, ((music_counter) % song->pattern_size));
-		buffer[19] = hex2char[pat->noise_vi >> 4];
-		if((pat->noise_vi & 0xF) == 0xF){
-			buffer[20] = '-';
+		pat = get_pf(song, *(pttrn), ((music_counter) % song->pattern_size));
+		buffer[++b] = hex2char[pat->vi >> 4];
+		if((pat->vi & 0xF) == 0xF){
+			buffer[++b] = '-';
 		}else{
-			buffer[20] = hex2char[pat->noise_vi & 0xF];
+			buffer[++b] = hex2char[pat->vi & 0xF];
 		}
-
 		write_bkg_line(0,music_counter,20,buffer + 1, music_counter%2);
 	}
 }
@@ -150,7 +126,7 @@ void write_win_line(UINT8 x, UINT8 y, UINT8 length, char *str) {
     set_win_tiles(x, y, length, 1, buffer);
 }
 
-void timer_isr() { 
+void timer_isr() {
 	if(tick_music() == 1){
 		move_bkg(0, counter * 8);
 		counter = (counter + 1)%counter_max;

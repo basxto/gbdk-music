@@ -5,7 +5,7 @@ CC=$(BIN)/gbdk-n-compile.sh
 LK?=$(BIN)/gbdk-n-link.sh
 MKROM?=makebin -Z -yc
 EMU?=vbam --no-pause-when-inactive -f1
-pngconvert=$(DEV)/png2gb/png2gb.py
+pngconvert=$(DEV)/png2gb/png2gb.py -ci
 
 music.gb: mainmusic.ihx
 	$(MKROM) $^ $@
