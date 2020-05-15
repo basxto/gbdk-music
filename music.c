@@ -70,7 +70,7 @@ void init_music(Song *song) {
 const Instrument instnoment = {0x00, 0x00, 0x00, 0x00};
 
 inline void subtick_music(){
-    UINT8 *current_sf = &((current_song->arrangement[music_counter / current_song->pattern_size]).noise_pattern);
+    const UINT8 *current_sf = &((current_song->arrangement[music_counter / current_song->pattern_size]).noise_pattern);
     UINT8 pttrn_frame = music_counter % current_song->pattern_size;
     const Pattern_frame *pat;
     const Instrument *instr;

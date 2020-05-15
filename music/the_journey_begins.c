@@ -236,8 +236,8 @@ const Instrument the_journey_begins_instruments[] = {
     {0x00 |5,   30, 0xC0, 0x20 | 0x04 | 0x03}
 };
 
-Song the_journey_begins={8,24,5,
-    the_journey_begins_pattern[0],
-    the_journey_begins_arrangement,
-    the_journey_begins_instruments
+const Song the_journey_begins={8,24,40,
+    &(the_journey_begins_pattern[0][0]),
+    &(the_journey_begins_arrangement[0]),
+    &(the_journey_begins_instruments[0])
 };
