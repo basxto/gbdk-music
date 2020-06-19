@@ -236,7 +236,10 @@ const Instrument the_journey_begins_instruments[] = {
     {0x00 |5,   30, 0xC0, 0x20 | 0x04 | 0x03}
 };
 
-const Song the_journey_begins={8,24,40,
+const Song the_journey_begins={
+    (sizeof(the_journey_begins_pattern[0])/sizeof(Pattern_frame)),
+    (sizeof(the_journey_begins_arrangement)/sizeof(Song_frame)),
+    40,
     &(the_journey_begins_pattern[0][0]),
     &(the_journey_begins_arrangement[0]),
     &(the_journey_begins_instruments[0])
