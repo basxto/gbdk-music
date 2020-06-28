@@ -75,7 +75,7 @@ inline void subtick_music(){
     const Pattern_frame *pat;
     const Instrument *instr;
     const Instrument *instruments = current_song->instruments;
-    __REG base = (&NR10_REG)+15;
+    UINT8 *base = (&NR10_REG)+15;
 
     // loop channels backwards
     for(UINT8 i = 0; i < 4; ++i){

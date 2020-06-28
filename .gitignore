@@ -4,6 +4,7 @@
 *.o
 *.sym
 *.asm
+*.s
 *.lk
 *.noi
 *.rel
