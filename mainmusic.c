@@ -146,7 +146,7 @@ void main() {
     OBP0_REG = 0xE1;
 
     // configure interrupt
-    TIMA_REG = TMA_REG = 0x1A;
+    TIMA_REG = TMA_REG = 0xE3;
     TAC_REG = 0x4 | 0x0; // 4096 Hz
     // enable timer interrupt
     disable_interrupts();
